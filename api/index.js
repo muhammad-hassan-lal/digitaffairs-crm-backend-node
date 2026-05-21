@@ -1,11 +1,10 @@
 const app = require("../src/app");
-const { sequelize } = require("../src/models");
+const sequelize = require("../src/config/db");
 
 let isConnected = false;
 
 module.exports = async (req, res) => {
   try {
-    // Allow health route without DB connection
     if (req.url === "/api/health" || req.url === "/health") {
       return app(req, res);
     }
