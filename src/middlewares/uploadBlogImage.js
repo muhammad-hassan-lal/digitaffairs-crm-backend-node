@@ -5,7 +5,7 @@ const s3 = require("../config/s3");
 
 const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-const blogUpload = multer({
+const uploadBlogImage = multer({
   storage: multerS3({
     s3,
     bucket: process.env.AWS_BUCKET,
@@ -35,4 +35,4 @@ const blogUpload = multer({
   },
 });
 
-module.exports = blogUpload;
+module.exports = uploadBlogImage;

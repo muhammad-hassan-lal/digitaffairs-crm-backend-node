@@ -48,7 +48,7 @@ const createUniqueSlug = async (title, ignoreId = null) => {
 
 const getImagePath = (file) => {
   if (!file) return null;
-  return `/uploads/blogs/${file.filename}`;
+  return file.location || null;
 };
 
 exports.getAll = async (req, res) => {
