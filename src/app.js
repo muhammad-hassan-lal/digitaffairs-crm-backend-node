@@ -36,6 +36,9 @@ app.use(logRequest);
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "API is running" });
 });
+app.get("/api/health12", (_req, res) => {
+  res.json({ success: true, message: "API is running" });
+});
 
 app.use("/api/auth", require("./routes/authRoutes"));
 
