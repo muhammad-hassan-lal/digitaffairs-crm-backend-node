@@ -37,20 +37,20 @@ app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "API is running" });
 });
 
-app.use("/api/faqs", require("./routes/faqRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
+
+app.use("/api/public/faqs", require("./routes/publicFaqRoutes"));
+app.use("/api/public/blogs", require("./routes/publicBlogRoutes"));
 app.use("/api/public", require("./routes/publicRoutes"));
+
+app.use("/api/faqs", require("./routes/faqRoutes"));
+app.use("/api/blog-categories", require("./routes/blogCategoryRoutes"));
+app.use("/api/blogs", require("./routes/blogRoutes"));
+
 app.use("/api/leads", require("./routes/leadRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/access", require("./routes/permissionRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
-
-
-app.use("/api/public/faqs", require("./routes/publicFaqRoutes"));
-app.use("/api/blog-categories", require("./routes/blogCategoryRoutes"));
-app.use("/api/blogs", require("./routes/blogRoutes"));
-app.use("/api/public/blogs", require("./routes/publicBlogRoutes"));
-
 
 
 app.use((req, res) => {
