@@ -233,3 +233,45 @@ INSERT INTO blog_categories (name, slug, description) VALUES
 ('Smart Accounting', 'smart-accounting', 'Blogs related to smart accounting.'),
 ('CFO Advisory', 'cfo-advisory', 'Blogs related to CFO advisory.');
 
+
+CREATE TABLE faqs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+
+  question VARCHAR(500) NOT NULL,
+  answer TEXT NOT NULL,
+
+  category_id INT DEFAULT NULL,
+
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  sort_order INT NOT NULL DEFAULT 0,
+
+  created_by INT DEFAULT NULL,
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (category_id) REFERENCES blog_categories(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+INSERT INTO permissions (name, description) VALUES
+('faqs.view', 'View FAQs'),
+('faqs.create', 'Create FAQs'),
+('faqs.edit', 'Edit FAQs'),
+('faqs.delete', 'Delete FAQs');
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 1, p.id
+FROM permissions p
+WHERE p.name IN (
+  'faqs.view',
+  'faqs.create',
+  'faqs.edit',
+  'faqs.delete'
+)
+AND NOT EXISTS (
+  SELECT 1
+  FROM role_permissions rp
+  WHERE rp.role_id = 1
+  AND rp.permission_id = p.id
+);

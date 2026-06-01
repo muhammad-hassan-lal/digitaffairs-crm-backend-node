@@ -167,12 +167,40 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
+    const { BlogCategory, Blog, Faq } = require("../models");
+
     const category = await BlogCategory.findByPk(req.params.id);
 
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: "Blog category not found",
+        message: "Category not found",
+      });
+    }
+
+    const publishedBlogsCount = await Blog.count({
+      where: {
+        category_id: category.id,
+        status: "published",
+      },
+    });
+
+    const publishedFaqsCount = await Faq.count({
+      where: {
+        category_id: category.id,
+        is_published: true,
+      },
+    });
+
+    if (publishedBlogsCount > 0 || publishedFaqsCount > 0) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "This category is linked with published blogs or FAQs. Please unpublish them first before deleting this category.",
+        data: {
+          published_blogs: publishedBlogsCount,
+          published_faqs: publishedFaqsCount,
+        },
       });
     }
 
@@ -180,14 +208,14 @@ exports.delete = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Blog category deleted successfully",
+      message: "Category deleted successfully",
     });
   } catch (error) {
-    console.error("Delete blog category error:", error);
+    console.error("Delete category error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Failed to delete blog category",
+      message: "Failed to delete category",
     });
   }
 };

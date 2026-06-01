@@ -11,7 +11,7 @@ const NewsletterSubscription = require('./NewsletterSubscription');
 const Blog = require("./Blog");
 const BlogCategory = require("./BlogCategory");
 const BlogComment = require("./BlogComment");
-
+const Faq = require("./faq");
 const models = {
   sequelize,
   User,
@@ -25,6 +25,7 @@ const models = {
   Blog,
   BlogCategory,
   BlogComment,
+  Faq,
 };
 
 Object.values(models).forEach((model) => {
