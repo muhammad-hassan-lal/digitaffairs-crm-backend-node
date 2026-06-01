@@ -1,5 +1,36 @@
 
+const app = require("../src/app");
+const sequelize = require("../src/config/db");
 
+let isConnected = false;
+
+module.exports = async (req, res) => {
+  if (req.url === "/api/vercel-index-test") {
+    return res.status(200).json({
+      success: true,
+      message: "api/index.js is being used by Vercel",
+      time: new Date().toISOString(),
+    });
+  }
+
+  try {
+    if (!isConnected) {
+      await sequelize.authenticate();
+      console.log("Database connected");
+      isConnected = true;
+    }
+
+    return app(req, res);
+  } catch (error) {
+    console.error("API startup failed:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "API startup failed",
+      error: error.message,
+    });
+  }
+};
 
 
 // const app = require("../src/app");
