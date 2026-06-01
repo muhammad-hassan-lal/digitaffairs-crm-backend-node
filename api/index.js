@@ -1,3 +1,7 @@
+
+
+
+
 const app = require("../src/app");
 const sequelize = require("../src/config/db");
 
@@ -26,3 +30,9 @@ module.exports = async (req, res) => {
     });
   }
 };
+
+
+// const app = require("../src/app");
+
+// module.exports = app;
+

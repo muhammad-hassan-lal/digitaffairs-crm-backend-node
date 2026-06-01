@@ -11,7 +11,7 @@ const NewsletterSubscription = require('./NewsletterSubscription');
 const Blog = require("./Blog");
 const BlogCategory = require("./BlogCategory");
 const BlogComment = require("./BlogComment");
-const Faq = require("./faq");
+const Faq = require("./Faq");
 const models = {
   sequelize,
   User,
