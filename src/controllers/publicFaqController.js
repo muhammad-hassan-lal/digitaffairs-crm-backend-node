@@ -118,3 +118,81 @@ exports.getPublishedFaqsByCategorySlug = async (req, res) => {
     });
   }
 };
+
+exports.getPublishedFaqsByServiceSlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { limit } = req.query;
+
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: "Service slug is required",
+      });
+    }
+
+    const category = await BlogCategory.findOne({
+      where: {
+        slug,
+        is_active: true,
+      },
+      attributes: ["id", "name", "slug", "description"],
+    });
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Service category not found",
+      });
+    }
+
+    const queryOptions = {
+      where: {
+        is_published: true,
+        category_id: category.id,
+      },
+      include: [
+        {
+          model: BlogCategory,
+          as: "category",
+          attributes: ["id", "name", "slug"],
+          required: false,
+        },
+      ],
+      attributes: [
+        "id",
+        "question",
+        "answer",
+        "category_id",
+        "sort_order",
+        "created_at",
+      ],
+      order: [
+        ["sort_order", "ASC"],
+        ["created_at", "DESC"],
+      ],
+    };
+
+    if (limit) {
+      queryOptions.limit = Number(limit);
+    }
+
+    const faqs = await Faq.findAll(queryOptions);
+
+    return res.json({
+      success: true,
+      data: {
+        service: category,
+        faqs,
+      },
+      message: "Service FAQs fetched successfully",
+    });
+  } catch (error) {
+    console.error("Get public service FAQs error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch service FAQs",
+    });
+  }
+};
