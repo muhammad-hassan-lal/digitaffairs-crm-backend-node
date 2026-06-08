@@ -17,7 +17,12 @@ const commentSchema = Joi.object({
 
 router.get("/", publicBlogController.getPublishedBlogs);
 router.get("/categories", publicBlogController.getPublicCategories);
+router.get(
+  "/categories/:categorySlug/related",
+  publicBlogController.getRelatedBlogsByCategory
+);
 router.get("/:slug", publicBlogController.getPublishedBlogBySlug);
+
 router.post("/comments", validate(commentSchema), blogCommentController.createPublic);
 
 module.exports = router;
