@@ -38,7 +38,21 @@ exports.createPublic = async (req, res) => {
 exports.getAll = async (req, res) => {
   try {
     const { page, limit, offset } = req.pagination;
-    const { search, status, source, service, priority, assigned_to, start_date, end_date } = req.query;
+    const {
+      search,
+      status,
+      source,
+      service,
+      priority,
+      assigned_to,
+      start_date,
+      end_date,
+      reference,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_term,
+    } = req.query;
 
     const where = {};
     if (status) where.status = status;
@@ -46,6 +60,11 @@ exports.getAll = async (req, res) => {
     if (service) where.service = service;
     if (priority) where.priority = priority;
     if (assigned_to) where.assigned_to = assigned_to === 'unassigned' ? null : Number(assigned_to);
+    if (reference) where.reference = reference;
+    if (utm_source) where.utm_source = utm_source;
+    if (utm_medium) where.utm_medium = utm_medium;
+    if (utm_campaign) where.utm_campaign = utm_campaign;
+    if (utm_term) where.utm_term = utm_term;
 
     if (start_date || end_date) {
       where.created_at = {};
@@ -61,6 +80,11 @@ exports.getAll = async (req, res) => {
         { company_name: { [Op.like]: `%${search}%` } },
         { service: { [Op.like]: `%${search}%` } },
         { message: { [Op.like]: `%${search}%` } },
+        { reference: { [Op.like]: `%${search}%` } },
+        { utm_source: { [Op.like]: `%${search}%` } },
+        { utm_medium: { [Op.like]: `%${search}%` } },
+        { utm_campaign: { [Op.like]: `%${search}%` } },
+        { utm_term: { [Op.like]: `%${search}%` } },
       ];
     }
 

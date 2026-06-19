@@ -25,8 +25,15 @@ const leadSchema = Joi.object({
 });
 
 const publicLeadSchema = leadSchema.fork(['status', 'priority', 'assigned_to', 'last_contacted_at', 'next_followup_at', 'admin_note'], (schema) => schema.optional()).unknown(false);
+const publicCampaignFields = {
+  reference: Joi.string().max(255).allow('', null),
+  utm_source: Joi.string().max(255).allow('', null),
+  utm_medium: Joi.string().max(255).allow('', null),
+  utm_campaign: Joi.string().max(255).allow('', null),
+  utm_term: Joi.string().max(255).allow('', null),
+};
 
-router.post('/public', validate(publicLeadSchema), leadController.createPublic);
+router.post('/public', validate(publicLeadSchema.keys(publicCampaignFields)), leadController.createPublic);
 
 router.use(authMiddleware);
 router.get('/', checkPermission('leads.view'), paginationMiddleware, leadController.getAll);

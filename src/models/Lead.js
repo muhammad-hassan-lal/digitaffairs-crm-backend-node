@@ -9,6 +9,11 @@ const Lead = sequelize.define('leads', {
   company_name: { type: DataTypes.STRING(150), allowNull: true },
   service: { type: DataTypes.STRING(150), allowNull: false },
   message: { type: DataTypes.TEXT, allowNull: true },
+  reference: { type: DataTypes.STRING(255), allowNull: true },
+  utm_source: { type: DataTypes.STRING(255), allowNull: true },
+  utm_medium: { type: DataTypes.STRING(255), allowNull: true },
+  utm_campaign: { type: DataTypes.STRING(255), allowNull: true },
+  utm_term: { type: DataTypes.STRING(255), allowNull: true },
   source: {
     type: DataTypes.ENUM('website', 'contact_form', 'newsletter', 'facebook', 'instagram', 'google', 'whatsapp', 'referral', 'other'),
     allowNull: false,

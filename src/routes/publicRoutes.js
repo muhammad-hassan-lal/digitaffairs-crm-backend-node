@@ -13,6 +13,11 @@ router.post('/consultation', validate(Joi.object({
   company_name: Joi.string().max(150).allow('', null),
   service: Joi.string().max(150).required(),
   message: Joi.string().allow('', null),
+  reference: Joi.string().max(255).allow('', null),
+  utm_source: Joi.string().max(255).allow('', null),
+  utm_medium: Joi.string().max(255).allow('', null),
+  utm_campaign: Joi.string().max(255).allow('', null),
+  utm_term: Joi.string().max(255).allow('', null),
   source: Joi.string().valid('website', 'facebook', 'instagram', 'google', 'whatsapp', 'referral', 'other').default('website'),
 })), leadController.createPublic);
 
