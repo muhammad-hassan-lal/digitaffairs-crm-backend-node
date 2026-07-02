@@ -14,6 +14,7 @@ const Lead = sequelize.define('leads', {
   utm_medium: { type: DataTypes.STRING(255), allowNull: true },
   utm_campaign: { type: DataTypes.STRING(255), allowNull: true },
   utm_term: { type: DataTypes.STRING(255), allowNull: true },
+  gclid: { type: DataTypes.STRING(255), allowNull: true },
   source: {
     type: DataTypes.ENUM('website', 'contact_form', 'newsletter', 'facebook', 'instagram', 'google', 'whatsapp', 'referral', 'other'),
     allowNull: false,

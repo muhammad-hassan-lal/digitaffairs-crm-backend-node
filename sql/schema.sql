@@ -78,6 +78,7 @@ CREATE TABLE leads (
   utm_medium VARCHAR(255) NULL,
   utm_campaign VARCHAR(255) NULL,
   utm_term VARCHAR(255) NULL,
+  gclid VARCHAR(255) NULL,
   source ENUM('website','contact_form','newsletter','facebook','instagram','google','whatsapp','referral','other') NOT NULL DEFAULT 'website',
   status ENUM('new','contacted','qualified','proposal_sent','converted','closed','spam') NOT NULL DEFAULT 'new',
   priority ENUM('low','normal','high','urgent') NOT NULL DEFAULT 'normal',
@@ -94,6 +95,7 @@ CREATE TABLE leads (
   INDEX idx_leads_service (service),
   INDEX idx_leads_reference (reference),
   INDEX idx_leads_utm_campaign (utm_campaign),
+  INDEX idx_leads_gclid (gclid),
   INDEX idx_leads_assigned_to (assigned_to),
   INDEX idx_leads_created_at (created_at),
   CONSTRAINT fk_leads_assigned_user FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL

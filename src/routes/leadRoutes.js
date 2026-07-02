@@ -15,6 +15,12 @@ const leadSchema = Joi.object({
   company_name: Joi.string().max(150).allow('', null),
   service: Joi.string().max(150).required(),
   message: Joi.string().allow('', null),
+  reference: Joi.string().max(255).allow('', null),
+  utm_source: Joi.string().max(255).allow('', null),
+  utm_medium: Joi.string().max(255).allow('', null),
+  utm_campaign: Joi.string().max(255).allow('', null),
+  utm_term: Joi.string().max(255).allow('', null),
+  gclid: Joi.string().max(255).allow('', null),
   source: Joi.string().valid('website', 'contact_form', 'newsletter', 'facebook', 'instagram', 'google', 'whatsapp', 'referral', 'other').default('website'),
   status: Joi.string().valid('new', 'contacted', 'qualified', 'proposal_sent', 'converted', 'closed', 'spam').default('new'),
   priority: Joi.string().valid('low', 'normal', 'high', 'urgent').default('normal'),
@@ -31,6 +37,7 @@ const publicCampaignFields = {
   utm_medium: Joi.string().max(255).allow('', null),
   utm_campaign: Joi.string().max(255).allow('', null),
   utm_term: Joi.string().max(255).allow('', null),
+  gclid: Joi.string().max(255).allow('', null),
 };
 
 router.post('/public', validate(publicLeadSchema.keys(publicCampaignFields)), leadController.createPublic);

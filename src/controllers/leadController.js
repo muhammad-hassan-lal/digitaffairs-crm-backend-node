@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { Lead, User } = require('../models');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const gohighlevelService = require('../services/gohighlevelService');
 
 const leadInclude = [
   {
@@ -13,6 +14,7 @@ const leadInclude = [
 
 const allowedUpdateFields = [
   'name', 'email', 'phone', 'company_name', 'service', 'message', 'source',
+  'reference', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'gclid',
   'status', 'priority', 'assigned_to', 'last_contacted_at', 'next_followup_at', 'admin_note',
 ];
 
@@ -27,6 +29,17 @@ exports.createPublic = async (req, res) => {
       created_at: new Date(),
       updated_at: new Date(),
     });
+
+    try {
+      await gohighlevelService.upsertContact(lead);
+    } catch (ghlErr) {
+      console.error('GoHighLevel lead sync error:', {
+        lead_id: lead.id,
+        message: ghlErr.message,
+        statusCode: ghlErr.statusCode,
+        response: ghlErr.response,
+      });
+    }
 
     return successResponse(res, lead, 'Your consultation request has been submitted successfully.', 201);
   } catch (err) {
@@ -52,6 +65,7 @@ exports.getAll = async (req, res) => {
       utm_medium,
       utm_campaign,
       utm_term,
+      gclid,
     } = req.query;
 
     const where = {};
@@ -65,6 +79,7 @@ exports.getAll = async (req, res) => {
     if (utm_medium) where.utm_medium = utm_medium;
     if (utm_campaign) where.utm_campaign = utm_campaign;
     if (utm_term) where.utm_term = utm_term;
+    if (gclid) where.gclid = gclid;
 
     if (start_date || end_date) {
       where.created_at = {};
@@ -85,6 +100,7 @@ exports.getAll = async (req, res) => {
         { utm_medium: { [Op.like]: `%${search}%` } },
         { utm_campaign: { [Op.like]: `%${search}%` } },
         { utm_term: { [Op.like]: `%${search}%` } },
+        { gclid: { [Op.like]: `%${search}%` } },
       ];
     }
 
