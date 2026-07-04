@@ -33,12 +33,15 @@ exports.createPublic = async (req, res) => {
     try {
       await gohighlevelService.upsertContact(lead);
     } catch (ghlErr) {
-      console.error('GoHighLevel lead sync error:', {
+      console.error(JSON.stringify({
+        service: 'gohighlevel',
+        event: 'lead_sync_failed_after_db_save',
+        timestamp: new Date().toISOString(),
         lead_id: lead.id,
         message: ghlErr.message,
         statusCode: ghlErr.statusCode,
-        response: ghlErr.response,
-      });
+        statusMessage: ghlErr.statusMessage || null,
+      }));
     }
 
     return successResponse(res, lead, 'Your consultation request has been submitted successfully.', 201);

@@ -20,6 +20,41 @@ const CUSTOM_FIELD_IDS = {
 
 const normalizeValue = (value) => (value === undefined || value === null ? '' : String(value));
 
+const logGhl = (level, event, details = {}) => {
+  const payload = {
+    service: 'gohighlevel',
+    event,
+    timestamp: new Date().toISOString(),
+    ...details,
+  };
+
+  console[level](JSON.stringify(payload));
+};
+
+const formatAuthorizationHeader = (authorization) => {
+  const token = normalizeValue(authorization).trim();
+  if (!token) return token;
+  return /^Bearer\s+/i.test(token) ? token : `Bearer ${token}`;
+};
+
+const getLeadId = (lead) => {
+  if (!lead) return null;
+  if (typeof lead.get === 'function') return lead.get('id') || lead.id || null;
+  return lead.id || null;
+};
+
+const getPayloadSummary = (payload) => ({
+  hasFirstName: Boolean(payload.firstName),
+  hasLastName: Boolean(payload.lastName),
+  hasEmail: Boolean(payload.email),
+  hasPhone: Boolean(payload.phone),
+  hasCompanyName: Boolean(payload.companyName),
+  customFieldCount: Array.isArray(payload.customFields) ? payload.customFields.length : 0,
+  customFieldsWithValue: Array.isArray(payload.customFields)
+    ? payload.customFields.filter((field) => Boolean(field.field_value)).length
+    : 0,
+});
+
 const splitFullName = (name) => {
   const parts = normalizeValue(name).trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return { firstName: '', lastName: '' };
@@ -104,12 +139,13 @@ const postJson = (url, body, headers) => new Promise((resolve, reject) => {
       }
 
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        resolve({ statusCode: res.statusCode, data });
+        resolve({ statusCode: res.statusCode, statusMessage: res.statusMessage, data });
         return;
       }
 
       const error = new Error(`GoHighLevel request failed with status ${res.statusCode}`);
       error.statusCode = res.statusCode;
+      error.statusMessage = res.statusMessage;
       error.response = data;
       reject(error);
     });
@@ -125,16 +161,52 @@ const postJson = (url, body, headers) => new Promise((resolve, reject) => {
 
 const upsertContact = async (lead) => {
   const payload = buildContactPayload(lead);
-  const response = await postJson(GHL_ENDPOINT, payload, {
-    Authorization: GHL_AUTHORIZATION,
-    Version: GHL_VERSION,
+  const requestUrl = new URL(GHL_ENDPOINT);
+  const leadId = getLeadId(lead);
+  const startedAt = Date.now();
+
+  logGhl('info', 'contact_upsert_started', {
+    lead_id: leadId,
+    endpointHost: requestUrl.hostname,
+    endpointPath: requestUrl.pathname,
+    version: GHL_VERSION,
+    locationId: GHL_LOCATION_ID,
+    assignedTo: GHL_ASSIGNED_TO,
+    source: GHL_SOURCE,
+    payloadSummary: getPayloadSummary(payload),
   });
 
-  return { payload, response };
+  try {
+    const response = await postJson(GHL_ENDPOINT, payload, {
+      Authorization: formatAuthorizationHeader(GHL_AUTHORIZATION),
+      Version: GHL_VERSION,
+    });
+
+    logGhl('info', 'contact_upsert_succeeded', {
+      lead_id: leadId,
+      statusCode: response.statusCode,
+      statusMessage: response.statusMessage,
+      durationMs: Date.now() - startedAt,
+    });
+
+    return { payload, response };
+  } catch (error) {
+    logGhl('error', 'contact_upsert_failed', {
+      lead_id: leadId,
+      statusCode: error.statusCode || null,
+      statusMessage: error.statusMessage || null,
+      message: error.message,
+      response: error.response || null,
+      durationMs: Date.now() - startedAt,
+    });
+
+    throw error;
+  }
 };
 
 module.exports = {
   buildContactPayload,
+  formatAuthorizationHeader,
   splitFullName,
   upsertContact,
 };
