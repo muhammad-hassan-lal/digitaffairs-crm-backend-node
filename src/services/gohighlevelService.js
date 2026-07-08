@@ -1,6 +1,6 @@
 const https = require('https');
 
-const GHL_ENDPOINT = process.env.GHL_ENDPOINT || 'https://services.leadconnectorhq.com/contacts/upsert';
+const GHL_ENDPOINT = process.env.GHL_ENDPOINT || 'https://services.leadconnectorhq.com/contacts';
 const GHL_AUTHORIZATION = process.env.GHL_AUTHORIZATION || 'pit-c0088c73-1dac-4a76-974e-64cfd7d0b903';
 const GHL_VERSION = process.env.GHL_VERSION || '2021-07-28';
 const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID || '9cgBpMS3MXPmjeMZMJzG';
